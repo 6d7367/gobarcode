@@ -13,7 +13,7 @@ type Code11 struct {
 	DebugPrint          bool
 }
 
-var encodeMap map[string]string = map[string]string{"0": "101011",
+var code11encodeMap map[string]string = map[string]string{"0": "101011",
 	"1":  "1101011",
 	"2":  "1001011",
 	"3":  "1100101",
@@ -97,13 +97,13 @@ func (this *Code11) getEncodedForPrint() string {
 		interCharSymb = "0"
 	}
 
-	encoded := encodeMap["ss"]
+	encoded := code11encodeMap["ss"]
 	encoded += interCharSymb
 	for _, ch := range this.withChecksum {
-		encoded += encodeMap[string(ch)]
+		encoded += code11encodeMap[string(ch)]
 		encoded += interCharSymb
 	}
-	encoded += encodeMap["ss"]
+	encoded += code11encodeMap["ss"]
 	encoded += interCharSymb
 
 	return encoded
