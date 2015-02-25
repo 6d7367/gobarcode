@@ -58,8 +58,8 @@ var code39encodeMap map[string]string = map[string]string{
 func NewCode39(msg string) *Code39 {
 	b := new(Code39)
 	b.msg = msg
-	b.BarWidth = 3
-	b.BarHeight = 150
+	b.BarWidth = 2
+	b.BarHeight = 25
 	b.DebugPrint = false
 
 	return b
@@ -73,24 +73,6 @@ func NewCode39(msg string) *Code39 {
 // 	f.Close()
 func (this *Code39) EncodeToPNG(w io.Writer) {
 	encoded := this.getEncodedForPrint()
-
-	computeImgW := func(s string, barWideLen, barNarrowLen int) int {
-		r := 0
-		for _, c := range s {
-			ch := string(c)
-			switch ch {
-			case "|":
-				r += barNarrowLen
-			case "▮":
-				r += barWideLen
-			case " ":
-				r += barWideLen
-			}
-			r += barNarrowLen
-		}
-
-		return r
-	}
 
 	pos := 0
 	barH := this.BarHeight
