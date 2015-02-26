@@ -141,7 +141,3 @@ func (this *Code39) getEncodedForPrint() string {
 
 	return encoded
 }
-
-func main() {
-
-}

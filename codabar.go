@@ -6,7 +6,7 @@ import "image"
 import "image/color"
 import "image/png"
 
-var encodeMap map[string]string = map[string]string{
+var codabarEncodeMap map[string]string = map[string]string{
 	"0": "||| ▮",
 	"2": "|| |▮",
 	"6": "| ||▮",
@@ -112,14 +112,14 @@ func (this *Codabar) getEncodedForPrint() string {
 		interCharSymb = "+"
 	}
 
-	encoded := encodeMap[this.Start]
+	encoded := codabarEncodeMap[this.Start]
 	encoded += interCharSymb
 	for _, c := range this.msg {
 		ch := string(c)
-		encoded += encodeMap[ch]
+		encoded += codabarEncodeMap[ch]
 		encoded += interCharSymb
 	}
-	encoded += encodeMap[this.Stop]
+	encoded += codabarEncodeMap[this.Stop]
 	encoded += interCharSymb
 
 	return encoded
