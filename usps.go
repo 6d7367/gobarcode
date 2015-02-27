@@ -22,19 +22,47 @@ var postnetEncodeMap map[string]string = map[string]string{
 	"9": "10100",
 }
 
-type Postnet struct {
+var planetEncodeMap map[string]string = map[string]string{
+	"0": "00111",
+	"1": "11100",
+	"2": "11010",
+	"3": "11001",
+	"4": "10110",
+	"5": "10101",
+	"6": "10011",
+	"7": "01110",
+	"8": "01101",
+	"9": "01011",
+}
+
+type USPS struct {
 	msg                 string
 	BarHeight, BarWidth int
 	DebugPrint          bool
+	encodeMap           map[string]string
 }
 
-func NewPostnet(msg string) *Postnet {
-	b := new(Postnet)
+func newUSPS(msg string) *USPS {
+	b := new(USPS)
 	b.msg = msg
 
-	b.BarWidth = 4
-	b.BarHeight = 50
+	b.BarWidth = 2
+	b.BarHeight = 25
 	b.DebugPrint = false
+
+	return b
+}
+
+func NewPostnet(msg string) *USPS {
+	b := newUSPS(msg)
+	b.encodeMap = postnetEncodeMap
+
+	return b
+}
+
+func NewPlanet(msg string) *USPS {
+	b := newUSPS(msg)
+	b.encodeMap = planetEncodeMap
 
 	return b
 }
@@ -42,11 +70,11 @@ func NewPostnet(msg string) *Postnet {
 // Example
 // 	msg := "555551237"
 // 	f, _ := os.Create(msg + ".png")
-// 	postnet := NewPostnet(msg)
+// 	postnet := gobarcode.NewPostnet(msg) // or gobarcode.NewPlanet(msg)
 // 	postnet.DebugPrint = true
 // 	postnet.EncodeToPNG(f)
 // 	f.Close()
-func (this *Postnet) EncodeToPNG(w io.Writer) {
+func (this *USPS) EncodeToPNG(w io.Writer) {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
@@ -91,7 +119,7 @@ func (this *Postnet) EncodeToPNG(w io.Writer) {
 	png.Encode(w, img)
 }
 
-func (this *Postnet) getEncodedForPrint() string {
+func (this *USPS) getEncodedForPrint() string {
 	var interCharSymb string
 
 	if this.DebugPrint {
@@ -106,10 +134,10 @@ func (this *Postnet) getEncodedForPrint() string {
 	encoded += interCharSymb
 	for _, c := range this.msg {
 		ch := string(c)
-		encoded += postnetEncodeMap[ch]
+		encoded += this.encodeMap[ch]
 		encoded += interCharSymb
 	}
-	encoded += postnetEncodeMap[checkDigit]
+	encoded += this.encodeMap[checkDigit]
 	encoded += interCharSymb
 	encoded += "1"
 	encoded += interCharSymb
@@ -117,7 +145,7 @@ func (this *Postnet) getEncodedForPrint() string {
 	return encoded
 }
 
-func (this *Postnet) checksum() string {
+func (this *USPS) checksum() string {
 	var sum int64 = 0
 	var r int = 0
 
