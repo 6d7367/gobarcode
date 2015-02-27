@@ -1,19 +1,18 @@
-package main
+// implements http://en.wikipedia.org/wiki/RM4SCC
+package gobarcode
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/png"
 	"io"
-	"os"
 )
 
 // t -tracker
 // d - descentin
 // a - ascenting
 // f - full
-var encodeMap map[string]string = map[string]string{
+var rm4sccEncodeMap map[string]string = map[string]string{
 	"A":     "dada",
 	"B":     "dfta",
 	"C":     "tafd",
@@ -54,6 +53,9 @@ var encodeMap map[string]string = map[string]string{
 	"STOP":  "f",
 }
 
+type rm4sccChecksumRow [6]string
+type rm4sccChecsumMatrix [6]rm4sccChecksumRow
+
 type RM4SCC struct {
 	msg                 string
 	BarHeight, BarWidth int
@@ -64,13 +66,20 @@ func NewRM4SCC(msg string) *RM4SCC {
 	b := new(RM4SCC)
 
 	b.msg = msg
-	b.BarHeight = 25
+	b.BarHeight = 10
 	b.BarWidth = 2
 	b.DebugPrint = false
 
 	return b
 }
 
+// Example
+// 	msg := "BX11LT1A"
+// 	f, _ := os.Create(msg + ".png")
+// 	rm4scc := NewRM4SCC(msg)
+// 	rm4scc.DebugPrint = true
+// 	rm4scc.EncodeToPNG(f)
+// 	f.Close()
 func (this *RM4SCC) EncodeToPNG(w io.Writer) {
 	encoded := this.getEncodedForPrint()
 
@@ -82,7 +91,6 @@ func (this *RM4SCC) EncodeToPNG(w io.Writer) {
 
 	imgH := barH * 3
 	imgW := len(encoded) * barW * 3
-	// imgW := 500
 
 	size := image.Rect(0, 0, imgW, imgH)
 	img := image.NewRGBA(size)
@@ -144,34 +152,73 @@ func (this *RM4SCC) getEncodedForPrint() string {
 		interCharSymb = ""
 	}
 
-	// checkDigit := this.checksum()
-
-	encoded := encodeMap["START"]
+	encoded := rm4sccEncodeMap["START"]
 	encoded += interCharSymb
 	for _, c := range this.msg {
 		ch := string(c)
-		encoded += encodeMap[ch]
+		encoded += rm4sccEncodeMap[ch]
 		encoded += interCharSymb
 	}
-	// encoded += encodeMap[checkDigit]
-	// encoded += interCharSymb
-	encoded += encodeMap["STOP"]
+
+	encoded += rm4sccEncodeMap[this.checksum()]
+	encoded += interCharSymb
+	encoded += rm4sccEncodeMap["STOP"]
 	encoded += interCharSymb
 
 	return encoded
 }
 
+// чтобы получить символ для проверки на целостность необходимо вычислить два числа
+// суммы верхних и нижних штрихов. У позиции штриха в кодируемом символе есть свой множитель,
+// см. weighter. Полученные суммы верхних и нижних штрихов необходимо разделить на 6,
+// полученный остаток является индексом линии и столбца в матрице, см. checksumDigit.
+// Символ, находящийся по индексу и будет проверочным
 func (this *RM4SCC) checksum() string {
-	var r int = 0
+	weighter := map[int]int{
+		0: 0,
+		1: 1,
+		2: 2,
+		3: 4,
+	}
 
-	return fmt.Sprint(r)
-}
+	checksumDigit := rm4sccChecsumMatrix{
+		rm4sccChecksumRow{"0", "1", "2", "3", "4", "5"},
+		rm4sccChecksumRow{"6", "7", "8", "9", "A", "B"},
+		rm4sccChecksumRow{"C", "D", "E", "F", "G", "H"},
+		rm4sccChecksumRow{"I", "J", "K", "L", "M", "N"},
+		rm4sccChecksumRow{"O", "P", "Q", "R", "S", "T"},
+		rm4sccChecksumRow{"U", "V", "W", "X", "Y", "Z"},
+	}
 
-func main() {
-	msg := "RM4SCC"
-	f, _ := os.Create(msg + ".png")
-	rm4scc := NewRM4SCC(msg)
-	rm4scc.DebugPrint = true
-	rm4scc.EncodeToPNG(f)
-	f.Close()
+	weightA := 0
+	weightD := 0
+
+	for _, c := range this.msg {
+		ch := rm4sccEncodeMap[string(c)]
+		tmpWeightA := 0
+		tmpWeightD := 0
+
+		for i, b := range ch {
+			weight := 3 - i
+			switch string(b) {
+			case "a":
+				tmpWeightA += weighter[weight] * 1
+			case "d":
+				tmpWeightD += weighter[weight] * 1
+			case "f":
+				tmpWeightA += weighter[weight] * 1
+				tmpWeightD += weighter[weight] * 1
+			}
+		}
+
+		weightA += tmpWeightA
+		weightD += tmpWeightD
+	}
+
+	weightA = weightA % 6
+	weightD = weightD % 6
+
+	r := checksumDigit[weightA-1][weightD-1]
+
+	return r
 }
