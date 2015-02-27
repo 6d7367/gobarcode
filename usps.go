@@ -1,3 +1,5 @@
+// implements http://en.wikipedia.org/wiki/POSTNET and
+// http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique
 package gobarcode
 
 import (
