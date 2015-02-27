@@ -1,4 +1,4 @@
-package main
+package gobarcode
 
 import (
 	"fmt"
@@ -6,11 +6,10 @@ import (
 	"image/color"
 	"image/png"
 	"io"
-	"os"
 	"strconv"
 )
 
-var encodeMap map[string]string = map[string]string{
+var postnetEncodeMap map[string]string = map[string]string{
 	"0": "11000",
 	"1": "00011",
 	"2": "00101",
@@ -33,22 +32,30 @@ func NewPostnet(msg string) *Postnet {
 	b := new(Postnet)
 	b.msg = msg
 
-	b.BarWidth = 2
-	b.BarHeight = 25
+	b.BarWidth = 4
+	b.BarHeight = 50
 	b.DebugPrint = false
 
 	return b
 }
 
+// Example
+// 	msg := "555551237"
+// 	f, _ := os.Create(msg + ".png")
+// 	postnet := NewPostnet(msg)
+// 	postnet.DebugPrint = true
+// 	postnet.EncodeToPNG(f)
+// 	f.Close()
 func (this *Postnet) EncodeToPNG(w io.Writer) {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
 	barH := this.BarHeight
 	barW := this.BarWidth
+	barWWide := barW * 2
 
-	imgH := barH * 4
-	imgW := len(encoded) * barW * 2
+	imgH := barH * 2
+	imgW := len(encoded) * barWWide * 2
 
 	size := image.Rect(0, 0, imgW, imgH)
 	img := image.NewRGBA(size)
@@ -58,7 +65,7 @@ func (this *Postnet) EncodeToPNG(w io.Writer) {
 		switch string(c) {
 		case "1":
 			for x := 0; x <= barW; x++ {
-				for y := barH * 2; y > 0; y-- {
+				for y := barH * 2; y >= 0; y-- {
 					img.Set(x+pos, y, color.Black)
 				}
 			}
@@ -71,14 +78,14 @@ func (this *Postnet) EncodeToPNG(w io.Writer) {
 			}
 			pos += barW
 		case "_":
-			pos -= barW
+			pos -= barWWide
 			for x := 0; x <= barW; x++ {
-				for y := 0; y <= barH; y++ {
+				for y := barH * 2; y >= 0; y-- {
 					img.Set(x+pos, y, color.RGBA{255, 0, 0, 255})
 				}
 			}
 		}
-		pos += barW
+		pos += barWWide
 	}
 
 	png.Encode(w, img)
@@ -99,10 +106,10 @@ func (this *Postnet) getEncodedForPrint() string {
 	encoded += interCharSymb
 	for _, c := range this.msg {
 		ch := string(c)
-		encoded += encodeMap[ch]
+		encoded += postnetEncodeMap[ch]
 		encoded += interCharSymb
 	}
-	encoded += encodeMap[checkDigit]
+	encoded += postnetEncodeMap[checkDigit]
 	encoded += interCharSymb
 	encoded += "1"
 	encoded += interCharSymb
@@ -120,21 +127,7 @@ func (this *Postnet) checksum() string {
 		sum += rV
 	}
 
-	for (sum % 10) != 0 {
-		sum += 1
-		r += 1
-	}
+	r = 10 - (int(sum) % 10)
 
 	return fmt.Sprint(r)
-}
-
-func main() {
-	msg := "0123456789"
-	f, _ := os.Create(msg + ".png")
-
-	postnet := NewPostnet(msg)
-	postnet.DebugPrint = true
-	postnet.EncodeToPNG(f)
-
-	f.Close()
 }
