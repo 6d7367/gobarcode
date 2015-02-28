@@ -13,8 +13,7 @@ type encodeChar struct {
 	encode string
 }
 
-// "" :encodeChar{0, ""},
-var encodeMap map[string]encodeChar = map[string]encodeChar{
+var code93EncodeMap map[string]encodeChar = map[string]encodeChar{
 	"0":   encodeChar{0, "100010100"},
 	"1":   encodeChar{1, "101001000"},
 	"2":   encodeChar{2, "101000100"},
@@ -136,16 +135,16 @@ func (this *Code93) getEncodedForPrint() string {
 	}
 	checkSum := this.checksum()
 
-	encoded := encodeMap["SS"].encode
+	encoded := code93EncodeMap["SS"].encode
 	encoded += interCharSymb
 
 	for _, c := range this.msg + checkSum {
 		ch := string(c)
-		encoded += encodeMap[ch].encode
+		encoded += code93EncodeMap[ch].encode
 		encoded += interCharSymb
 	}
 
-	encoded += encodeMap["SS"].encode
+	encoded += code93EncodeMap["SS"].encode
 	encoded += interCharSymb
 	encoded += "1" + interCharSymb
 
@@ -158,7 +157,7 @@ func (this *Code93) checksum() string {
 	weight := 1
 
 	for i := len(this.msg) - 1; i >= 0; i-- {
-		enCh := encodeMap[string(this.msg[i])]
+		enCh := code93EncodeMap[string(this.msg[i])]
 		sumC += enCh.value * weight
 		weight += 1
 
@@ -172,7 +171,7 @@ func (this *Code93) checksum() string {
 
 	findChar := func(sum int) string {
 		r := ""
-		for i, enCh := range encodeMap {
+		for i, enCh := range code93EncodeMap {
 			if enCh.value == sum {
 				r = i
 				break
@@ -186,7 +185,7 @@ func (this *Code93) checksum() string {
 	afterSumC := this.msg + sumCCh
 
 	for i := len(afterSumC) - 1; i >= 0; i-- {
-		enCh := encodeMap[string(afterSumC[i])]
+		enCh := code93EncodeMap[string(afterSumC[i])]
 		sumK += enCh.value * weight
 		weight += 1
 
