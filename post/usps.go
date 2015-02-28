@@ -1,6 +1,6 @@
 // implements http://en.wikipedia.org/wiki/POSTNET and
 // http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique
-package gobarcode
+package post
 
 import (
 	"fmt"
@@ -72,7 +72,7 @@ func NewPlanet(msg string) *USPS {
 // Example
 // 	msg := "555551237"
 // 	f, _ := os.Create(msg + ".png")
-// 	postnet := gobarcode.NewPostnet(msg) // or gobarcode.NewPlanet(msg)
+// 	postnet := NewPostnet(msg) // or NewPlanet(msg)
 // 	postnet.DebugPrint = true
 // 	postnet.EncodeToPNG(f)
 // 	f.Close()

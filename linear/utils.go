@@ -1,4 +1,4 @@
-package gobarcode
+package linear
 
 func computeImgW(s string, barWideLen, barNarrowLen int) int {
 	r := 0

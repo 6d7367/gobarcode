@@ -1,5 +1,5 @@
 // implements http://en.wikipedia.org/wiki/Pharmacode
-package gobarcode
+package linear
 
 import "fmt"
 import "io"
@@ -21,12 +21,11 @@ func NewPharmacode(n int) *Pharmacode {
 }
 
 // Example
-// 	import "github.com/6d7367/gobarcode"
 // 	...
 // 	n := 69
 // 	filename := fmt.Sprint(n) + ".png"
 // 	f, _ := os.Create(filename)
-// 	p := gobarcode.NewPharmacode(n)
+// 	p := NewPharmacode(n)
 // 	p.EncodeToPNG(f)
 // 	f.Close()
 func (this *Pharmacode) EncodeToPNG(w io.Writer) {

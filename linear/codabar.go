@@ -1,5 +1,5 @@
 // implements http://en.wikipedia.org/wiki/Codabar
-package gobarcode
+package linear
 
 import "io"
 import "image"
@@ -38,7 +38,7 @@ type Codabar struct {
 // Example
 // 	msg := "1234567890"
 // 	f, _ := os.Create(msg)
-// 	codabar := gobarcode.NewCodabar(msg)
+// 	codabar := NewCodabar(msg)
 // 	codabar.BarHeight = 150
 // 	codabar.BarWidth = 3
 // 	codabar.EncodeToPNG(f)

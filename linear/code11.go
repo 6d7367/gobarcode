@@ -1,5 +1,5 @@
 // implements http://en.wikipedia.org/wiki/Code_11
-package gobarcode
+package linear
 
 import "strconv"
 import "io"
@@ -28,12 +28,11 @@ var code11encodeMap map[string]string = map[string]string{"0": "101011",
 }
 
 // Example
-// 	import "github.com/6d7367/gobarcode"
 // 	...
 // 	msg := "1917"
 // 	filename := msg + ".png"
 // 	f, _ := os.Create(filename)
-// 	code11 := gobarcode.NewCode11(msg)
+// 	code11 := NewCode11(msg)
 // 	code11.BarHeight = 150
 // 	code11.BarWidth = 5
 // 	code11.DebugPrint = true

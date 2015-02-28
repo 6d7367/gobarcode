@@ -1,5 +1,5 @@
 // implements http://en.wikipedia.org/wiki/Code_39
-package gobarcode
+package linear
 
 import "io"
 import "image"

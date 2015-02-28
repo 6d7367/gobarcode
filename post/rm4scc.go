@@ -1,5 +1,5 @@
 // implements http://en.wikipedia.org/wiki/RM4SCC
-package gobarcode
+package post
 
 import (
 	"image"
