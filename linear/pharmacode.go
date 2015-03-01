@@ -1,11 +1,15 @@
 // implements http://en.wikipedia.org/wiki/Pharmacode
+// 	n := 69
+// 	f, _ := os.Create("pharmacode.png")
+// 	b := linear.NewPharmacode(n)
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package linear
 
 import "fmt"
-import "io"
 import "image"
 import "image/color"
-import "image/png"
 
 type Pharmacode struct {
 	n, BarWidth, BarHeight int
@@ -20,15 +24,7 @@ func NewPharmacode(n int) *Pharmacode {
 	return b
 }
 
-// Example
-// 	...
-// 	n := 69
-// 	filename := fmt.Sprint(n) + ".png"
-// 	f, _ := os.Create(filename)
-// 	p := NewPharmacode(n)
-// 	p.EncodeToPNG(f)
-// 	f.Close()
-func (this *Pharmacode) EncodeToPNG(w io.Writer) {
+func (this *Pharmacode) GetImage() image.Image {
 	encoded := fmt.Sprintf("%b", this.n+1)[1:]
 
 	barH := this.BarHeight
@@ -61,5 +57,5 @@ func (this *Pharmacode) EncodeToPNG(w io.Writer) {
 
 	}
 
-	png.Encode(w, img)
+	return img
 }

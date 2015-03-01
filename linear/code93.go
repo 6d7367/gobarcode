@@ -1,12 +1,14 @@
 // implements http://en.wikipedia.org/wiki/Code_93
+// 	msg := "TEST93"
+// 	f, _ := os.Create("code93.png")
+// 	b := linear.NewCode93(msg)
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package linear
 
-import (
-	"image"
-	"image/color"
-	"image/png"
-	"io"
-)
+import "image"
+import "image/color"
 
 type encodeChar struct {
 	value  int
@@ -81,14 +83,7 @@ func NewCode93(msg string) *Code93 {
 	return b
 }
 
-// Example
-// 	msg := "TEST93"
-// 	code93 := NewCode93(msg)
-// 	f, _ := os.Create(msg + ".png")
-// 	code93.DebugPrint = true
-// 	code93.EncodeToPNG(f)
-// 	f.Close()
-func (this *Code93) EncodeToPNG(w io.Writer) {
+func (this *Code93) GetImage() image.Image {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
@@ -123,7 +118,7 @@ func (this *Code93) EncodeToPNG(w io.Writer) {
 		}
 	}
 
-	png.Encode(w, img)
+	return img
 }
 
 func (this *Code93) getEncodedForPrint() string {

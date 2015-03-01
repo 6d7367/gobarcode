@@ -1,13 +1,17 @@
 // implements http://en.wikipedia.org/wiki/POSTNET and
 // http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique
+// 	msg := "555551237"
+// 	f, _ := os.Create("postnet.png")
+// 	b := post.NewPostnet(msg) // or post.NewPlanet
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package post
 
 import (
 	"fmt"
 	"image"
 	"image/color"
-	"image/png"
-	"io"
 	"strconv"
 )
 
@@ -69,14 +73,7 @@ func NewPlanet(msg string) *USPS {
 	return b
 }
 
-// Example
-// 	msg := "555551237"
-// 	f, _ := os.Create(msg + ".png")
-// 	postnet := NewPostnet(msg) // or NewPlanet(msg)
-// 	postnet.DebugPrint = true
-// 	postnet.EncodeToPNG(f)
-// 	f.Close()
-func (this *USPS) EncodeToPNG(w io.Writer) {
+func (this *USPS) GetImage() image.Image {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
@@ -118,7 +115,7 @@ func (this *USPS) EncodeToPNG(w io.Writer) {
 		pos += barWWide
 	}
 
-	png.Encode(w, img)
+	return img
 }
 
 func (this *USPS) getEncodedForPrint() string {

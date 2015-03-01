@@ -1,11 +1,15 @@
 // implements http://en.wikipedia.org/wiki/RM4SCC
+// 	msg := "BX11LT1A"
+// 	f, _ := os.Create("rm4scc.png")
+// 	b := post.NewRM4SCC(msg)
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package post
 
 import (
 	"image"
 	"image/color"
-	"image/png"
-	"io"
 )
 
 // t -tracker
@@ -73,14 +77,7 @@ func NewRM4SCC(msg string) *RM4SCC {
 	return b
 }
 
-// Example
-// 	msg := "BX11LT1A"
-// 	f, _ := os.Create(msg + ".png")
-// 	rm4scc := NewRM4SCC(msg)
-// 	rm4scc.DebugPrint = true
-// 	rm4scc.EncodeToPNG(f)
-// 	f.Close()
-func (this *RM4SCC) EncodeToPNG(w io.Writer) {
+func (this *RM4SCC) GetImage() image.Image {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
@@ -140,7 +137,7 @@ func (this *RM4SCC) EncodeToPNG(w io.Writer) {
 		pos += barWWide
 	}
 
-	png.Encode(w, img)
+	return img
 }
 
 func (this *RM4SCC) getEncodedForPrint() string {

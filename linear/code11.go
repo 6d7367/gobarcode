@@ -1,10 +1,14 @@
 // implements http://en.wikipedia.org/wiki/Code_11
+// 	msg := "1917"
+// 	f, _ := os.Create("code11.png")
+// 	b := linear.NewCode11(msg)
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package linear
 
 import "strconv"
-import "io"
 import "image"
-import "image/png"
 import "image/color"
 
 type Code11 struct {
@@ -27,17 +31,6 @@ var code11encodeMap map[string]string = map[string]string{"0": "101011",
 	"ss": "1011001",
 }
 
-// Example
-// 	...
-// 	msg := "1917"
-// 	filename := msg + ".png"
-// 	f, _ := os.Create(filename)
-// 	code11 := NewCode11(msg)
-// 	code11.BarHeight = 150
-// 	code11.BarWidth = 5
-// 	code11.DebugPrint = true
-// 	code11.EncodeToPNG(f)
-// 	f.Close()
 func NewCode11(msg string) *Code11 {
 	b := new(Code11)
 	b.raw = msg
@@ -48,7 +41,7 @@ func NewCode11(msg string) *Code11 {
 	return b
 }
 
-func (this *Code11) EncodeToPNG(w io.Writer) {
+func (this *Code11) GetImage() image.Image {
 	this.checksum()
 
 	encoded := this.getEncodedForPrint()
@@ -83,7 +76,7 @@ func (this *Code11) EncodeToPNG(w io.Writer) {
 		}
 	}
 
-	png.Encode(w, img)
+	return img
 
 }
 

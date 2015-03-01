@@ -1,9 +1,13 @@
 // implements http://en.wikipedia.org/wiki/Code_39
+// 	msg := "GOBARCODE"
+// 	f, _ := os.Create("code39.png")
+// 	b := linear.NewCode39(msg)
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package linear
 
-import "io"
 import "image"
-import "image/png"
 import "image/color"
 
 type Code39 struct {
@@ -65,13 +69,7 @@ func NewCode39(msg string) *Code39 {
 	return b
 }
 
-// Example
-//	 msg := "GOBARCODE"
-// 	f, _ := os.Create(msg + ".png")
-// 	code39 := NewCode39(msg)
-// 	code39.Encode(f)
-// 	f.Close()
-func (this *Code39) EncodeToPNG(w io.Writer) {
+func (this *Code39) GetImage() image.Image {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
@@ -116,8 +114,7 @@ func (this *Code39) EncodeToPNG(w io.Writer) {
 		}
 	}
 
-	png.Encode(w, img)
-
+	return img
 }
 
 func (this *Code39) getEncodedForPrint() string {

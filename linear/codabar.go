@@ -1,10 +1,14 @@
 // implements http://en.wikipedia.org/wiki/Codabar
+// 	msg := "1234567890"
+// 	f, _ := os.Create("codabar.png")
+// 	b := linear.NewCodabar(msg)
+// 	img := b.GetImage()
+// 	png.Encode(f, img)
+// 	f.Close()
 package linear
 
-import "io"
 import "image"
 import "image/color"
-import "image/png"
 
 var codabarEncodeMap map[string]string = map[string]string{
 	"0": "||| ▮",
@@ -35,14 +39,6 @@ type Codabar struct {
 	DebugPrint          bool
 }
 
-// Example
-// 	msg := "1234567890"
-// 	f, _ := os.Create(msg)
-// 	codabar := NewCodabar(msg)
-// 	codabar.BarHeight = 150
-// 	codabar.BarWidth = 3
-// 	codabar.EncodeToPNG(f)
-// 	f.Close()
 func NewCodabar(msg string) *Codabar {
 	b := new(Codabar)
 	b.msg = msg
@@ -55,7 +51,7 @@ func NewCodabar(msg string) *Codabar {
 	return b
 }
 
-func (this *Codabar) EncodeToPNG(w io.Writer) {
+func (this *Codabar) GetImage() image.Image {
 	encoded := this.getEncodedForPrint()
 
 	pos := 0
@@ -100,7 +96,7 @@ func (this *Codabar) EncodeToPNG(w io.Writer) {
 		}
 	}
 
-	png.Encode(w, img)
+	return img
 }
 
 func (this *Codabar) getEncodedForPrint() string {

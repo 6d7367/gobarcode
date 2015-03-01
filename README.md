@@ -5,13 +5,11 @@
 
 ```go
 msg := "1234567890"
-f, _ := os.Create(msg + ".png")
-codabar := linear.NewCodabar(msg)
-codabar.BarHeight = 150
-codabar.BarWidth = 3
-codabar.EncodeToPNG(f)
+f, _ := os.Create("codabar.png")
+b := linear.NewCodabar(msg)
+img := b.GetImage()
+png.Encode(f, img)
 f.Close()
 ```
 
-1234567890.png
-![1234567890.png](1234567890.png)
+![codabar.png](codabar.png)
